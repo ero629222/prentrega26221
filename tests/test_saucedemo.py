@@ -53,3 +53,28 @@ def test_navegacion_y_catalogo(driver):s
     assert len(nombre) > 0, "El nombre del primer producto esta vacio"
     assert "$" in precio, f"El precio '{precio}' no contiene formato de moneda"
     print(f"\n[CATALOGO] Primer producto detectado: {nombre} | Precio: {precio}")
+    
+    
+    @pytest.mark.smoke
+def test_interaccion_carrito_compras(driver):
+    """CP03: Agregar primer producto, verificar contador y comprobarlo dentro del carrito."""
+    ejecutar_login(driver)
+
+    # Localizar primer item y guardar su nombre
+    primer_item = driver.find_elements(By.CLASS_NAME, "inventory_item")[0]
+    nombre_esperado = primer_item.find_element(By.CLASS_NAME, "inventory_item_name").text
+
+    # Anadir al carrito
+    primer_item.find_element(By.XPATH, ".//button[contains(@id, 'add-to-cart')]").click()
+
+    # Validar que el badge del carrito sea '1'
+    badge = esperar_elemento_visible(driver, By.CLASS_NAME, "shopping_cart_badge")
+    assert badge.text == "1", f"El badge esperaba '1' y muestra: {badge.text}"
+
+    # Navegar al carrito y verificar presencia
+    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    assert esperar_url_contenga(driver, "cart.html"), "Fallo la navegacion a cart.html"
+
+    items_carrito = driver.find_elements(By.CLASS_NAME, "inventory_item_name")
+    nombres_en_carrito = [elem.text for elem in items_carrito]
+    assert nombre_esperado in nombres_en_carrito, f"El producto {nombre_esperado} no esta en el carrito"
