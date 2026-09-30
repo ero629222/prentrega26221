@@ -1,8 +1,13 @@
+"""
+Suite de pruebas automatizadas sobre SauceDemo.
+Cobertura de Clases 6 a 8: Login, Catálogo e Interacción con Carrito.
+"""
 import pytest
 from selenium.webdriver.common.by import By
 from utils.helpers import esperar_elemento_visible, esperar_url_contenga
 
 URL_LOGIN = "https://www.saucedemo.com/"
+
 
 def ejecutar_login(driver, usuario="standard_user", password="secret_sauce"):
     """Helper interno para login seguro con teclado real en campos de React."""
@@ -11,6 +16,7 @@ def ejecutar_login(driver, usuario="standard_user", password="secret_sauce"):
     esperar_elemento_visible(driver, By.ID, "password").send_keys(password)
     esperar_elemento_visible(driver, By.ID, "login-button").click()
     esperar_url_contenga(driver, "inventory.html")
+
 
 @pytest.mark.smoke
 def test_login_exitoso(driver):
@@ -21,7 +27,7 @@ def test_login_exitoso(driver):
     esperar_elemento_visible(driver, By.ID, "password").send_keys("secret_sauce")
     esperar_elemento_visible(driver, By.ID, "login-button").click()
 
-    # Criterios obligatorios: URL y titulos
+    # Validaciones obligatorias
     assert esperar_url_contenga(driver, "inventory.html"), "Error: No redirigio a inventory.html"
     
     titulo = esperar_elemento_visible(driver, By.CLASS_NAME, "title").text
@@ -29,9 +35,10 @@ def test_login_exitoso(driver):
     
     logo = esperar_elemento_visible(driver, By.CLASS_NAME, "app_logo").text
     assert logo == "Swag Labs", f"Se esperaba 'Swag Labs' y se obtuvo: {logo}"
-    
-    @pytest.mark.regression
-def test_navegacion_y_catalogo(driver):s
+
+
+@pytest.mark.regression
+def test_navegacion_y_catalogo(driver):
     """CP02: Validar visibilidad de elementos UI y detalle del primer producto del catalogo."""
     ejecutar_login(driver)
 
@@ -53,9 +60,9 @@ def test_navegacion_y_catalogo(driver):s
     assert len(nombre) > 0, "El nombre del primer producto esta vacio"
     assert "$" in precio, f"El precio '{precio}' no contiene formato de moneda"
     print(f"\n[CATALOGO] Primer producto detectado: {nombre} | Precio: {precio}")
-    
-    
-    @pytest.mark.smoke
+
+
+@pytest.mark.smoke
 def test_interaccion_carrito_compras(driver):
     """CP03: Agregar primer producto, verificar contador y comprobarlo dentro del carrito."""
     ejecutar_login(driver)
@@ -64,7 +71,7 @@ def test_interaccion_carrito_compras(driver):
     primer_item = driver.find_elements(By.CLASS_NAME, "inventory_item")[0]
     nombre_esperado = primer_item.find_element(By.CLASS_NAME, "inventory_item_name").text
 
-    # Anadir al carrito
+    # Añadir al carrito
     primer_item.find_element(By.XPATH, ".//button[contains(@id, 'add-to-cart')]").click()
 
     # Validar que el badge del carrito sea '1'
