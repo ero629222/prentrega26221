@@ -12,7 +12,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # 1) Crear el driver con opciones limpias
 opciones = webdriver.ChromeOptions()
 opciones.add_argument("--start-maximized")
-opciones.add_argument("--headless=new")
+#opciones.add_argument("--headless=new")
 
 servicio = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=servicio, options=opciones)
@@ -40,3 +40,4 @@ try:
 finally:
     # 6) Cerrar el navegador
     driver.quit()
+

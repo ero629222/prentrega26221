@@ -20,6 +20,8 @@ def ejecutar_login(driver, usuario="standard_user", password="secret_sauce"):
     esperar_elemento_visible(driver, By.ID, "password").send_keys(password)
     esperar_elemento_visible(driver, By.ID, "login-button").click()
     esperar_url_contenga(driver, "inventory.html")
+    # Esperar a que la pagina de inventario cargue completamente sus componentes
+    esperar_elemento_visible(driver, By.CLASS_NAME, "title")
 
 
 @pytest.mark.smoke
@@ -82,8 +84,9 @@ def test_interaccion_carrito_compras(driver):
     badge = esperar_elemento_visible(driver, By.CLASS_NAME, "shopping_cart_badge")
     assert badge.text == "1", f"El badge esperaba '1' y muestra: {badge.text}"
 
-    # Navegar al carrito y verificar presencia
-    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    # Navegar al carrito y verificar presencia con clic confiable
+    enlace_carrito = esperar_elemento_clickable(driver, By.CLASS_NAME, "shopping_cart_link")
+    driver.execute_script("arguments[0].click();", enlace_carrito)
     assert esperar_url_contenga(driver, "cart.html"), "Fallo la navegacion a cart.html"
 
     items_carrito = driver.find_elements(By.CLASS_NAME, "inventory_item_name")
@@ -110,16 +113,18 @@ def test_cierre_de_sesion(driver):
     """CP05: Validar flujo de cierre de sesion y retorno a la pantalla principal."""
     ejecutar_login(driver)
 
-    # Abrir menu lateral hamburguesa
-    esperar_elemento_clickable(driver, By.ID, "react-burger-menu-btn").click()
+    # Abrir menu lateral hamburguesa con clic seguro
+    btn_menu = esperar_elemento_clickable(driver, By.ID, "react-burger-menu-btn")
+    driver.execute_script("arguments[0].click();", btn_menu)
 
-    # Esperar y hacer clic en enlace de logout
+    # Esperar enlace y hacer clic con JavaScript para evitar problemas de transicion animada en React
     enlace_logout = esperar_elemento_clickable(driver, By.ID, "logout_sidebar_link")
-    enlace_logout.click()
+    driver.execute_script("arguments[0].click();", enlace_logout)
 
     # Validar retorno a pantalla de login y presencia de formulario
     boton_login = esperar_elemento_visible(driver, By.ID, "login-button")
     assert boton_login.is_displayed(), "No se visualiza el boton de login tras cerrar sesion"
     assert "inventory.html" not in driver.current_url, (
         "El usuario permanece en el inventario tras cerrar sesion"
+    )
     )
