@@ -9,6 +9,12 @@ def esperar_elemento_visible(driver, by, locator, timeout=10):
         EC.visibility_of_element_located((by, locator))
     )
 
+def esperar_elemento_clickable(driver, by, locator, timeout=10):
+    """Espera explicita para validar que un elemento este visible y habilitado para clic."""
+    return WebDriverWait(driver, timeout).until(
+        EC.element_to_be_clickable((by, locator))
+    )
+
 def esperar_url_contenga(driver, fragmento, timeout=10):
     """Espera explicita para validar cambios en la URL."""
     return WebDriverWait(driver, timeout).until(

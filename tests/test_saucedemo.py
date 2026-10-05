@@ -1,10 +1,14 @@
 """
 Suite de pruebas automatizadas sobre SauceDemo.
-Cobertura de Clases 6 a 8: Login, Catálogo e Interacción con Carrito.
+Cobertura de Clases 6 a 8: Login, Catálogo, Interacción con Carrito y Sesión.
 """
 import pytest
 from selenium.webdriver.common.by import By
-from utils.helpers import esperar_elemento_visible, esperar_url_contenga
+from utils.helpers import (
+    esperar_elemento_visible,
+    esperar_elemento_clickable,
+    esperar_url_contenga,
+)
 
 URL_LOGIN = "https://www.saucedemo.com/"
 
@@ -85,3 +89,37 @@ def test_interaccion_carrito_compras(driver):
     items_carrito = driver.find_elements(By.CLASS_NAME, "inventory_item_name")
     nombres_en_carrito = [elem.text for elem in items_carrito]
     assert nombre_esperado in nombres_en_carrito, f"El producto {nombre_esperado} no esta en el carrito"
+
+
+@pytest.mark.regression
+def test_login_credenciales_invalidas(driver):
+    """CP04: Validar mensaje de error ante intento de login con credenciales invalidas."""
+    driver.get(URL_LOGIN)
+    esperar_elemento_visible(driver, By.ID, "user-name").send_keys("invalid_user")
+    esperar_elemento_visible(driver, By.ID, "password").send_keys("invalid_password")
+    esperar_elemento_visible(driver, By.ID, "login-button").click()
+
+    mensaje_error = esperar_elemento_visible(driver, By.CSS_SELECTOR, "[data-test='error']").text
+    assert "Username and password do not match" in mensaje_error, (
+        f"El mensaje de error esperado no coincide. Obtenido: '{mensaje_error}'"
+    )
+
+
+@pytest.mark.regression
+def test_cierre_de_sesion(driver):
+    """CP05: Validar flujo de cierre de sesion y retorno a la pantalla principal."""
+    ejecutar_login(driver)
+
+    # Abrir menu lateral hamburguesa
+    esperar_elemento_clickable(driver, By.ID, "react-burger-menu-btn").click()
+
+    # Esperar y hacer clic en enlace de logout
+    enlace_logout = esperar_elemento_clickable(driver, By.ID, "logout_sidebar_link")
+    enlace_logout.click()
+
+    # Validar retorno a pantalla de login y presencia de formulario
+    boton_login = esperar_elemento_visible(driver, By.ID, "login-button")
+    assert boton_login.is_displayed(), "No se visualiza el boton de login tras cerrar sesion"
+    assert "inventory.html" not in driver.current_url, (
+        "El usuario permanece en el inventario tras cerrar sesion"
+    )
