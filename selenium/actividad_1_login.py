@@ -33,7 +33,7 @@ try:
     # 5) Verificar redirección a /inventory.html
     assert "/inventory.html" in driver.current_url, "No se redirigio al inventario"
 
-    # Reto extra
+    # extra
     assert driver.title == "Swag Labs", "Titulo inesperado"
 
     print("[OK] [Actividad 1] Test OK: Login exitoso, redireccion y titulo validados correctamente.")

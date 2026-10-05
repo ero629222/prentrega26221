@@ -43,3 +43,4 @@ try:
     print("[OK] [Actividad 3] Test OK: Flujo de carrito verificado correctamente.")
 finally:
     driver.quit()
+

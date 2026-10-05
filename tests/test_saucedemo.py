@@ -96,8 +96,13 @@ def test_interaccion_carrito_compras(driver):
 
 @pytest.mark.regression
 def test_login_credenciales_invalidas(driver):
-    """CP04: Validar mensaje de error ante intento de login con credenciales invalidas."""
+    """CP04: Validar mensaje de error ante un intento de login con credenciales invalidas."""
+    # Abre la pantalla de login.
+    # Ingresa un usuario y clave que no existen.
+    # Hace clic en el botón de login.
+    # Espera a que aparezca la caja de error roja ([data-test='error']) y valida que contenga el texto "Username and password do not match".
     driver.get(URL_LOGIN)
+    
     esperar_elemento_visible(driver, By.ID, "user-name").send_keys("invalid_user")
     esperar_elemento_visible(driver, By.ID, "password").send_keys("invalid_password")
     esperar_elemento_visible(driver, By.ID, "login-button").click()
@@ -110,7 +115,12 @@ def test_login_credenciales_invalidas(driver):
 
 @pytest.mark.regression
 def test_cierre_de_sesion(driver):
-    """CP05: Validar flujo de cierre de sesion y retorno a la pantalla principal."""
+    """CP05: Validar el flujo de cierre de sesion y el retorno a la pantalla principal."""
+    # Realiza el login exitoso previo para entrar al catálogo.
+    # Despliega el menú hamburguesa lateral izquierdo.
+    # Espera a que el enlace de Logout esté listo y hace clic en él.
+    # Valida que el usuario sea redirigido fuera de inventory.html y que el botón de login vuelva a estar visible en pantalla.
+    
     ejecutar_login(driver)
 
     # Abrir menu lateral hamburguesa con clic seguro
@@ -126,5 +136,4 @@ def test_cierre_de_sesion(driver):
     assert boton_login.is_displayed(), "No se visualiza el boton de login tras cerrar sesion"
     assert "inventory.html" not in driver.current_url, (
         "El usuario permanece en el inventario tras cerrar sesion"
-    )
     )

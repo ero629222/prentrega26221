@@ -11,7 +11,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 opciones = webdriver.ChromeOptions()
 opciones.add_argument("--start-maximized")
-# opciones.add_argument("--headless=new")  # Descomentar si se desea ejecucion sin ventana
+# opciones.add_argument("--headless=new")  # Descomentar si se desea  la ejecucion sin ventana
 
 servicio = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=servicio, options=opciones)
@@ -43,3 +43,4 @@ try:
     print("[OK] [Actividad 2] Test OK: Catalogo e inventario validados correctamente.")
 finally:
     driver.quit()
+
