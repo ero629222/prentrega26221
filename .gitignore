@@ -7,3 +7,4 @@ reports/screenshots/*.png
 !reports/.gitkeep
 !reports/screenshots/.gitkeep
 .vscode/
+ejemplo/
